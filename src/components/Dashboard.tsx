@@ -35,11 +35,26 @@ export function Dashboard() {
     <CloudSync />
     <div><h2 className="page-title">Панель керування</h2><p className="muted">Окремий облік особового складу за поточними статусами</p></div>
 
-    <section aria-label="Статистика за статусами" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {groups.map(({ status, title, Icon, color }) => <div className="panel" key={status}>
+    <section aria-label="Статистика особового складу" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      {groups.filter(group => group.status !== 'Відсутній').map(({ status, title, Icon, color }) => <div className="panel" key={status}>
         <div className="flex items-center justify-between"><span className="text-sm font-medium text-slate-500">{title}</span><span className={`rounded-xl p-2.5 ${color}`}><Icon size={19}/></span></div>
         <div className="mt-3 text-3xl font-bold tracking-tight">{byStatus(status).length}</div><div className="mt-1 text-xs text-slate-400">осіб</div>
       </div>)}
+      <div className="panel">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-slate-500">Кількість за посадами</span>
+          <span className="rounded-xl bg-indigo-50 p-2.5 text-indigo-700"><BriefcaseBusiness size={19}/></span>
+        </div>
+        <div className="mt-3 max-h-32 space-y-2 overflow-y-auto">
+          {Array.from(new Set(soldiers.map(s => s.position.trim()).filter(Boolean)))
+            .sort((a, b) => a.localeCompare(b, 'uk'))
+            .map(position => <div className="flex items-center justify-between gap-3 text-sm" key={position}>
+              <span className="truncate text-slate-600">{position}</span>
+              <b className="shrink-0 text-lg tabular-nums">{soldiers.filter(s => s.position.trim() === position).length}</b>
+            </div>)}
+          {!soldiers.some(s => s.position.trim()) && <p className="text-sm text-slate-400">Посади ще не додані</p>}
+        </div>
+      </div>
     </section>
 
     <section className="space-y-3">
